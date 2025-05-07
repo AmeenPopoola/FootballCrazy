@@ -5,6 +5,12 @@ function HomePage() {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString();  // Default locale format: e.g., "9/6/2025, 6:30:00 PM"
+  };
+
   useEffect(() => {
     axios.get('http://localhost:8000/api/matches')
       .then(res => {
@@ -37,8 +43,21 @@ function HomePage() {
       {loading ? <p>Loading...</p> : (
         <ul>
           {matches.map((match, index) => (
-            <li key={index}>
-              {match.utcDate?.slice(0, 15)}: {match.homeTeam?.name} vs {match.awayTeam?.name}
+            <li key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <img
+                src={`/logos/${match.homeTeam?.name}.png`}
+                alt={match.homeTeam?.name}
+                style={{ width: '30px', height: '30px', marginRight: '8px' }}
+                onError={(e) => e.target.src = '/logos/default.png'} // fallback image
+              />
+              {match.homeTeam?.name} vs
+              <img
+                src={`/logos/${match.awayTeam?.name}.png`}
+                alt={match.awayTeam?.name}
+                style={{ width: '30px', height: '30px', margin: '0 8px' }}
+                onError={(e) => e.target.src = '/logos/default.png'}
+              />
+              {match.awayTeam?.name}  - <strong>{formatDate(match.utcDate)}</strong>
             </li>
           ))}
         </ul>
